@@ -29,7 +29,10 @@ public class Main {
 		int sumOfGrades = math + physic + history + chemistry + music + turkish;
 		double meanOfGrades = sumOfGrades / 6;
 		
+		
 		System.out.println("Ortalamanýz: " + meanOfGrades);
+		
+		System.out.println(meanOfGrades > 60 ? "Geçtiniz." : "Kaldýnýz.");
 		
 	}
 }

@@ -1,4 +1,4 @@
-package HavaEtkinligineGöreEtkinlik;
+package HavaSicakliginaGöreEtkinlik;
 
 import java.util.Scanner;
 

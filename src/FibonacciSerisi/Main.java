@@ -17,6 +17,6 @@ public class Main {
 			firstItem = secondItem;
 			secondItem = result;
 		}
-		
+	
 	}
 }

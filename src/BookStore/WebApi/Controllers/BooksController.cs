@@ -5,6 +5,8 @@ using WebApi.DBOperations;
 using WebApi.BookOperations.GetBooks;
 using WebApi.BookOperations.CreateBooks;
 using System;
+using FluentValidation;
+using AutoMapper;
 
 namespace WebApi.AddControllers{
 
@@ -13,14 +15,15 @@ namespace WebApi.AddControllers{
     public class BookController : ControllerBase {
         
         private readonly BookStoreDbContext _context;
-
-        public BookController(BookStoreDbContext context) {
+        private readonly IMapper _mapper;
+        public BookController(BookStoreDbContext context, IMapper mapper) {
             _context = context;
+            _mapper = mapper;
         }
         
         [HttpGet]
         public IActionResult GetBooks() {
-            GetBooksQuery  query = new GetBooksQuery(_context);
+            GetBooksQuery  query = new GetBooksQuery(_context, _mapper);
             var result = query.Handle();
 
             return Ok(result);
@@ -28,7 +31,7 @@ namespace WebApi.AddControllers{
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id) {
-            GetBookQuery query = new GetBookQuery(_context);
+            GetBookQuery query = new GetBookQuery(_context, _mapper);
             var result = query.Handle(id);
 
             return Ok(result);
@@ -36,10 +39,13 @@ namespace WebApi.AddControllers{
 
         [HttpPost]
         public IActionResult AddBook([FromBody] CreateBookModel newBook){
-            CreateBookCommand command = new CreateBookCommand(_context);
+            CreateBookCommand command = new CreateBookCommand(_context, _mapper);
             try
             {
                 command.Model = newBook;
+                CreateBookCommandValidator validator = new CreateBookCommandValidator();
+                validator.ValidateAndThrow(command);
+                
                 command.Handle();
                 
             }
@@ -55,8 +61,12 @@ namespace WebApi.AddControllers{
         public IActionResult UpdateBook(int id, [FromBody] UpdateBookModel model){
             
             UpdateBookCommand command = new UpdateBookCommand(_context);
+
             try
             {
+                UpdateBookCommandValidator validator = new UpdateBookCommandValidator();
+                validator.ValidateAndThrow(model);
+
                 command.Handle(id, model);
             }
             catch (System.Exception ex)

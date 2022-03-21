@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "\\WebApi",
+    "\\WebApi\\BookOperations",
+    "\\WebApi\\Common",
+    "\\WebApi\\Controllers",
+    "\\WebApi\\DBOperations"
+  ],
+  "PreviewInSolutionExplorer": false
+}

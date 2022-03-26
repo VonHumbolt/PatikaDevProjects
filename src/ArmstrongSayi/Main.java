@@ -14,5 +14,7 @@ public class Main {
 			number /= 10;
 		}
 		System.out.println("Basamaklar Toplamý: " + sum);
+		
+		
 	}
 }

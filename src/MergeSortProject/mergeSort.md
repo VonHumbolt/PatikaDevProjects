@@ -17,6 +17,5 @@
 ### Soru - 2: Big-O gösterimini yazýnýz.
 
 Big-o Notation: = O(n*log(n))
-
-
+  
 

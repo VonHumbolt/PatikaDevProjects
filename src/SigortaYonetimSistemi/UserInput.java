@@ -4,12 +4,13 @@ import java.util.Scanner;
 
 import SigortaYonetimSistemi.business.AccountManager;
 import SigortaYonetimSistemi.entities.abstracts.Account;
+import SigortaYonetimSistemi.exceptions.InvalidAuthenticationException;
 
 public class UserInput {
 
 	Scanner sc;
 	
-	public UserInput(AccountManager accountManager) {
+	public UserInput(AccountManager accountManager) throws InvalidAuthenticationException {
 		this.sc = new Scanner(System.in);
 		
 		System.out.print("Email: ");

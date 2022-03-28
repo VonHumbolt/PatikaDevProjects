@@ -3,6 +3,7 @@ package SigortaYonetimSistemi.business;
 import java.util.TreeSet;
 
 import SigortaYonetimSistemi.entities.abstracts.Account;
+import SigortaYonetimSistemi.exceptions.InvalidAuthenticationException;
 
 public class AccountManager {
 	
@@ -13,7 +14,7 @@ public class AccountManager {
 		this.set = new TreeSet<Account>();
 	}
 	
-	public Account login(String email, String password) {
+	public Account login(String email, String password) throws InvalidAuthenticationException {
 		
 		for (Account a : set) {
 			if (a.getUser().getEmail() == email && a.getUser().getPassword() == password) {
@@ -26,7 +27,7 @@ public class AccountManager {
 				}
 			}
 		}
-		return null;
+		throw new InvalidAuthenticationException("Kullanýcý adý veya þifre hatalý !");
 	}
 	
 }

@@ -1,6 +1,7 @@
 package SigortaYonetimSistemi;
 
 import SigortaYonetimSistemi.business.AccountManager;
+import SigortaYonetimSistemi.exceptions.InvalidAuthenticationException;
 
 public class Main {
 
@@ -8,7 +9,12 @@ public class Main {
 		
 		AccountManager manager = new AccountManager();
 		
-		UserInput userInput = new UserInput(manager);
+		try {
+			UserInput userInput = new UserInput(manager);
+		} catch (InvalidAuthenticationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}

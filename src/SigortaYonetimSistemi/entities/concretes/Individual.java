@@ -13,7 +13,7 @@ public class Individual extends Account {
 	@Override
 	public int compareTo(Account o) {
 		// TODO Auto-generated method stub
-		return this.getUser().getEmail().compareTo(o.getUser().getEmail());
+		return this.hashCode()-o.hashCode();
 	}
 	
 }

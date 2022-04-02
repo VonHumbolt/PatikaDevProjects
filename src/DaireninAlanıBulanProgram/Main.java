@@ -17,5 +17,10 @@ public class Main {
 		
 		double area = (Math.pow(r, 2) * pi * a) / 360;
 		System.out.println("Alan: " + area);
+		
+		
+		
+		
+		
 	}
 }

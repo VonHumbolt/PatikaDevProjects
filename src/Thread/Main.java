@@ -1,6 +1,7 @@
 package Thread;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -40,5 +41,17 @@ public class Main {
 		t2.start();
 		t3.start();
 		t4.start();
+		
+		List<Integer> list2 = new ArrayList<Integer>();
+		
+		list2.add(10);
+		list2.add(10);
+		list2.add(40);
+		list2.add(20);
+		list2.add(30);
+	
+		list2.add(50);
+		
+		list2.stream().limit(3).distinct().sorted(Comparator.reverseOrder()).forEach(i -> System.out.println(i));
 	}
 }

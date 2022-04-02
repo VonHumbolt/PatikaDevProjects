@@ -27,10 +27,10 @@ public class EvenOddList implements Runnable{
 				
 				if (this.list.get(i) % 2 == 0) {
 					this.evenList.add(i);
-					System.out.println(i);
+//					System.out.println(this.list.get(i));
 				} else {
 					this.oddList.add(i);
-					System.out.println(i);
+//					System.out.println(i);
 				}
 			}
 			

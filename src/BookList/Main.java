@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -35,20 +36,20 @@ public class Main {
 		bookList.add(book9);
 		bookList.add(book10);
 		
-		Map<String, String> bookMap = new HashMap<String, String>();
+		Map<String, String> bookMap = bookList.stream().collect(Collectors.toMap(Book::getBookName, Book::getAuthorName));
 		
-		bookList.stream().forEach(b -> {
-			bookMap.put(b.getBookName(), b.getAuthorName());
-		});
+//		bookList.stream().forEach(b -> {
+//			bookMap.put(b.getBookName(), b.getAuthorName());
+//		});
 		
 		System.out.println(bookMap);
 		
-		List<Book> newList = new ArrayList<Book>();
+		List<Book> newList = bookList.stream().filter(b -> b.getBookPage() > 100).collect(Collectors.toList());
 		
-		bookList.stream().filter(b -> b.getBookPage() > 100).forEach(b -> {
-			newList.add(b);
-		});
-		
+//		bookList.stream().filter(b -> b.getBookPage() > 100).forEach(b -> {
+//			newList.add(b);f
+//		});
+//		
 		System.out.println(newList);
 	}
 

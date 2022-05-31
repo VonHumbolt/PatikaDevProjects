@@ -1,5 +1,7 @@
 package OnlineBankSystem.entity;
 
+import java.util.Random;
+
 public class Customer {
 
 	private String identityNumber;
@@ -14,14 +16,22 @@ public class Customer {
 	
 	private double creditDebt;
 	
-	public Customer(String identityNumber, String password, String accountNumber, double money, double cardDebt, double creditDebt) {
+	public Customer(String identityNumber, String password, double money, double cardDebt, double creditDebt) {
 		super();
 		this.identityNumber = identityNumber;
 		this.password = password;
-		this.accountNumber = accountNumber;
+		this.accountNumber = getRandomAccountNumber();
 		this.setMoney(money);
 		this.cardDebt = cardDebt;
 		this.creditDebt = creditDebt;
+	}
+	
+	// Rastgele account Number oluþturacak fonksiyon 
+	String getRandomAccountNumber() {
+		Random random = new Random();
+		int number = random.nextInt(99999999);
+		
+		return String.format("%06d", number);	
 	}
 
 	public String getIdentityNumber() {

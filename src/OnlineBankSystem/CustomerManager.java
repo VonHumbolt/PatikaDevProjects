@@ -26,7 +26,7 @@ public class CustomerManager {
 		jsonParser = new JSONParser();
 	}
 	
-	public void register(String identityNumber, String password) {
+	public void register(String identityNumber, String password, double money) {
 		int count = 0;
 		// Password doðum tarihi mi kontrol edelim 
 		for (int i = 0; i<= password.length() - 1; i++) {
@@ -37,7 +37,7 @@ public class CustomerManager {
 				count = 0;
 			
 		}
-		if (count == 4) 
+		if (count >= 4) 
 			System.out.println("Þifre doðum tarihi olamaz");
 		
 		else {
@@ -45,8 +45,7 @@ public class CustomerManager {
 			Customer customer = new Customer(
 						identityNumber,
 						password,
-						getRandomAccountNumber(),
-						1500,
+						money,
 						0,
 						0
 					);
@@ -59,81 +58,165 @@ public class CustomerManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void login(String identityNumber, String password) {
+	public boolean login(String identityNumber, String password) {
 		
 		// Eðer kullanýcýnýn verileri json da varsa git onlarý doðrula 
 		// Read json
+		boolean isLoginSuccess = true;
+		
 		JSONArray customerList = readJson();
 		
 		if (customerList.size() == 0) {
 			System.out.println("Veritabaný boþ!");
+			isLoginSuccess = false;
 		} else {
 			customerList.stream().forEach(customer -> {
 				JSONObject c = (JSONObject) customer;
 				if ( c.get("identityNumber").equals(identityNumber) && c.get("password").equals(password)) {
 					
 					System.out.println("Giriþ baþarýlý! Hoþgeldiniz.");
-					 throw new RuntimeException();
+					
 				}
 				else
-					//System.out.println("Þifre veya Kimlik numarasý hatalý");
-					throw new RuntimeException("Þifre veya Kimlik numarasý hatalý");
+					System.out.println("Þifre veya Kimlik numarasý hatalý");
+					
 			});
 			
 		}
-		
+		return isLoginSuccess;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void moneyTransfer(String fromAccount, String toAccount, double money) {
-		JSONArray customerList = readJson();
+		JSONArray customerDb = readJson(); // Json dosyasýný oku
 		
-		if (customerList.size() == 0) {
+		if (customerDb.size() == 0) {
 			System.out.println("Veritabaný boþ!");
 		} else {
-			customerList.stream().forEach(customer -> {
+			customerDb.stream().forEach(customer -> {
 				JSONObject c = (JSONObject) customer;
 				
-				if (c.get("identityNumber").equals(fromAccount)) {
+				if (c.get("identityNumber").equals(fromAccount)) { // Verile identity number var ise devam et
 					
 					System.out.println("Ýþlem öncesi bakiye : " + c.get("money"));
 					System.out.println("Ýþlem sonrasý bakiye : " + ((double) c.get("money") - money));
 					
-					Customer newCustomer = new Customer(
+					Customer newCustomer = new Customer( // Kullanýcýnýn parasýný azaltýyoruz transferden dolayý
 								(String) c.get("identityNumber"),
 								(String) c.get("password"),
-								(String) c.get("accountNumber"),
 								(double) ((double) c.get("money") - money),
 								(double) c.get("cardDebt"),
 								(double) c.get("creditDebt")
 							);
 					
-					//customerList.remove(customer);
+					customerList.remove(customer); // Json dosyasýný güncellemek için kullanýcýyý siliyorum!
 					
-					writeJson(newCustomer);
+					writeJson(newCustomer); // Parasýný güncel fiyat olarak oluþturduðum kullanýcýyý json a yazýyorum!
 					
 				}
 				
 			});
 			
-			Optional customerFromJson = customerList.stream().filter(customer -> ((JSONObject) customer).get("identityNumber").equals(toAccount) ).findFirst();
+			Optional customerFromJson = customerDb.stream().filter(customer -> ((JSONObject) customer).get("identityNumber").equals(toAccount) ).findFirst();
 			JSONObject obj = (JSONObject) customerFromJson.get();
-			System.out.println(fromAccount + " hesabýndan para transferi alýndý. Yeni bakiye : " + ((double) obj.get("money") + money));
+			
 		}
 	}
 	
-	public void payCardDebt(String accountNumber) {
+	@SuppressWarnings("unchecked")
+	public void payCardDebt(String identityNumber) {
 		// Jsondan oku 
 		// Borç yoksa borç yok yaz
 		// Borç var ise hesapta yeterli para varsa ödeyebilsin!
 		
+		JSONArray customerDb = readJson(); // Json dosyasýný oku
+		
+		if (customerDb.size() == 0) {
+			System.out.println("Veritabaný boþ!");
+		} else {
+			customerDb.stream().forEach(customer -> {
+				JSONObject c = (JSONObject) customer;
+				
+				if (c.get("identityNumber").equals(identityNumber)) { // Verilen identity number var ise devam et
+					
+					if ((double) c.get("cardDebt") == 0) {
+						System.out.println("Kard borcunuz bulunmamaktadýr.");
+					} else {
+						if ( (double) c.get("money") >= (double) c.get("cardDebt")) {
+							// Ödeme iþlemini yap
+							System.out.println("Borcunuz ödendi!");
+							System.out.println("Eski bakiye : " + c.get("money"));
+							System.out.println("Yeni bakiye : " + ( (double) c.get("money") - (double) c.get("cardDebt")));
+							
+							// Kullanýcýyý güncelleyelim !
+							Customer newCustomer = new Customer( 
+									(String) c.get("identityNumber"),
+									(String) c.get("password"),
+									(double) ((double) c.get("money") - (double) c.get("cardDebt")),
+									(double) 0,
+									(double) c.get("creditDebt")
+									);
+							
+							customerList.remove(customer); // Json dosyasýný güncellemek için kullanýcýyý siliyorum!
+							writeJson(newCustomer); // Kart borcunu sildiðim kullanýcýyý json a yazýyorum!
+
+						} else {
+							System.out.println("Borcunuzu ödemek için yeterli paranýz bulunmamaktadýr.");
+						}
+					}
+					
+				}
+				
+			});
+			
+		}
+		
 	
 	}
 	
-	public void payDebt(String accountNumber) {
-		// Jsondan oku 
-				// Borç yoksa borç yok yaz
-				// Borç var ise hesapta yeterli para varsa ödeyebilsin!
+	@SuppressWarnings("unchecked")
+	public void payDebt(String identityNumber) {
+		JSONArray customerDb = readJson(); // Json dosyasýný oku
+		
+		if (customerDb.size() == 0) {
+			System.out.println("Veritabaný boþ!");
+		} else {
+			customerDb.stream().forEach(customer -> {
+				JSONObject c = (JSONObject) customer;
+				
+				if (c.get("identityNumber").equals(identityNumber)) {
+					
+					if ((double) c.get("creditDebt") == 0) {
+						System.out.println("Kredi borcunuz bulunmamaktadýr.");
+					} else {
+						if ( (double) c.get("money") >= (double) c.get("creditDebt")) {
+							// Ödeme iþlemini yap
+							System.out.println("Borcunuz ödendi!");
+							System.out.println("Eski bakiye : " + c.get("money"));
+							System.out.println("Yeni bakiye : " + ( (double) c.get("money") - (double) c.get("creditDebt")));
+							
+							// Kullanýcýyý güncelleyelim !
+							Customer newCustomer = new Customer( 
+									(String) c.get("identityNumber"),
+									(String) c.get("password"),
+									(double) ((double) c.get("money") - (double) c.get("cardDebt")),
+									(double) c.get("cardDebt"),
+									(double) 0
+									);
+							
+							customerList.remove(customer); // Json dosyasýný güncellemek için kullanýcýyý siliyorum!
+							writeJson(newCustomer); // Kart borcunu sildiðim kullanýcýyý json a yazýyorum!
+
+						} else {
+							System.out.println("Borcunuzu ödemek için yeterli paranýz bulunmamaktadýr.");
+						}
+					}
+					
+				}
+				
+			});
+			
+		}
 				
 	}
 	
@@ -146,10 +229,6 @@ public class CustomerManager {
         customerDetails.put("money", customer.getMoney());
         customerDetails.put("cardDebt", customer.getCardDebt());
         customerDetails.put("creditDebt", customer.getCreditDebt());
-        
-      
-//        JSONObject customerObject = new JSONObject(); 
-//        customerObject.put("customer", customerDetails);
         
         
         customerList.add(customerDetails);
@@ -192,26 +271,7 @@ public class CustomerManager {
 		return customerList;
 	}
 	
-	private static void parseCustomerObject(JSONObject customer) {
-		
-        String identityNumber = (String) customer.get("identityNumber");
-        System.out.println(identityNumber);
-
-        // Get user last name
-        String password = (String) customer.get("password");
-        System.out.println(password);
-
-        // Get user website name
-        String accountNumber = (String) customer.get("accountNumber");
-        System.out.println(accountNumber);
-
-    }
 	
-	// Rsatgele account Number oluþturacak fonksiyon 
-	String getRandomAccountNumber() {
-		Random random = new Random();
-		int number = random.nextInt(99999999);
-		
-		return String.format("%06d", number);	
-	}
+	
+	
 }
